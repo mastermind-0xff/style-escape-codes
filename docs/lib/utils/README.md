@@ -17,6 +17,7 @@
 - [assertNotNullish](functions/assertNotNullish.md)
 - [assertRange](functions/assertRange.md)
 - [assertType](functions/assertType.md)
+- [getEnv](functions/getEnv.md)
 - [hexNumberToRgb](functions/hexNumberToRgb.md)
 - [hexStringToRgb](functions/hexStringToRgb.md)
 - [hslToRgb](functions/hslToRgb.md)

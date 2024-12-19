@@ -36,7 +36,6 @@ console.log(sec.b.u.fg.hex(0xff0000)('bold underline red message'));
 console.log(sec.b.u.fg.hsl(0, 100, 50)('bold underline red message'));
 console.log(sec.b.u.fgRed + 'bold underline red message' + sec.b.u.fg.unset());
 
-
 logTitle('Disable styles. Care, saved styles are tricky.');
 const myStyle = sec.b.u.fgRed;
 // prints with styles
@@ -82,4 +81,3 @@ await exec(
     console.log('All ok now.');
   }
 );
-

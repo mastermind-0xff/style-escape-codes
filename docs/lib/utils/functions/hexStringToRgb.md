@@ -29,4 +29,4 @@ hexStringToRgb('F') // => [255, 255, 255]
 
 ## Defined in
 
-[lib/utils.ts:72](https://github.com/mastermind-0xff/style-escape-codes/blob/f70027a113314c5fe8c8e4fe231b59efc8b75d4d/src/lib/utils.ts#L72)
+[lib/utils.ts:72](https://github.com/mastermind-0xff/style-escape-codes/blob/86f72e47c8a4169fb2601208e7c23c504221a7fb/src/lib/utils.ts#L72)

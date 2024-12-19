@@ -30,4 +30,4 @@ console.log(sec.b.u.fgRed + 'bold underline red message' + sec.b.u.fg.unset());
 
 ## Defined in
 
-[lib/style-escape-codes.ts:198](https://github.com/mastermind-0xff/style-escape-codes/blob/f70027a113314c5fe8c8e4fe231b59efc8b75d4d/src/lib/style-escape-codes.ts#L198)
+[lib/style-escape-codes.ts:212](https://github.com/mastermind-0xff/style-escape-codes/blob/86f72e47c8a4169fb2601208e7c23c504221a7fb/src/lib/style-escape-codes.ts#L212)
