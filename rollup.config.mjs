@@ -16,9 +16,9 @@ import json from '@rollup/plugin-json';
 export default [
   {
     input: './src/index.ts',
+    watch: false,
     output: [
       {
-        // file: packageJson.main,
         dir: './dist/cjs',
         format: 'cjs',
         sourcemap: true,
@@ -28,7 +28,6 @@ export default [
         entryFileNames: '[name].cjs',
       },
       {
-        // file: packageJson.module,
         dir: './dist/esm',
         format: 'esm',
         sourcemap: true,
@@ -40,15 +39,16 @@ export default [
     ],
     plugins: [
       json(),
-      resolve({ moduleDirectories: ['node_modules'] }),
+      resolve(),
       commonjs(),
       typescript({ tsconfig: './tsconfig.json' }),
     ],
-    external: (id) => {
-      if (String(id).indexOf('node_modules') !== -1) return true;
-      return false;
-    },
+    // external: (id) => {
+    //   if (String(id).indexOf('node_modules') !== -1) return true;
+    //   return false;
+    // },
   },
+ 
   // {
   //   input: './dist/esm/types/index.d.ts',
   //   output: [{ file: './dist/index.d.ts', format: 'esm' }],

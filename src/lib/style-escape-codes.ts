@@ -2,6 +2,7 @@
 
 import type { FlagsType } from './constants';
 import { Flags, Flag, StringEnd } from './constants';
+import { SecSettings } from './settings';
 import {
   assertType,
   hexNumberToRgb,
@@ -49,6 +50,8 @@ export type StyleEscapeCodes = {
   (): never;
   queryCodesSet: '';
   queryCodesUnset: '';
+  disable: () => void;
+  enable: () => void;
 } & ColorMappingsAsCallable &
   FlagsAsCallable;
 
@@ -91,6 +94,50 @@ const ColorMappings = {
 /** \_\_proto\_\_ base for each new branch. */
 const branchBase = () => {};
 
+const wrapCodes = (codes: string) => `\x1b[${codes.substring(1)}m`;
+
+let spawnBranch: (set: string, unset: string) => (message: string) => string;
+
+const branch = (queryCodesSet: string, queryCodesUnset: string) => {
+  const callable = (message: string) =>
+    wrapCodes(queryCodesSet) +
+    indexOfReplaceAll(
+      message,
+      StringEnd,
+      wrapCodes(queryCodesSet) + StringEnd
+    ) +
+    wrapCodes(queryCodesUnset) +
+    StringEnd;
+
+  callable.queryCodesSet = queryCodesSet;
+  callable.queryCodesUnset = queryCodesUnset;
+  callable.toString = callable.set = () => wrapCodes(queryCodesSet);
+  callable.unset = () => wrapCodes(queryCodesUnset) + StringEnd;
+
+  Object.setPrototypeOf(callable, branchBase);
+
+  return callable;
+};
+
+/**
+ * Swap function to replace creation of a new branch in case of disable signal.
+ * @param args Sponge any arguments.
+ * @returns Callable that will output the input.
+ */
+const branchDisabled = (queryCodesSet: string, queryCodesUnset: string) => {
+  const callable = (message: string) => message;
+  callable.queryCodesSet = queryCodesSet;
+  callable.queryCodesUnset = queryCodesUnset;
+  callable.toString = callable.set = () => '';
+  callable.unset = () => '';
+
+  Object.setPrototypeOf(callable, branchBase);
+  return callable;
+};
+
+if (SecSettings.enabled) spawnBranch = branch;
+else spawnBranch = branchDisabled;
+
 // add flags to the base
 (Object.entries(Flags) as [Flag, FlagsType[Flag]][]).forEach(
   ([name, value]) => {
@@ -101,7 +148,11 @@ const branchBase = () => {};
           this.queryCodesUnset + ';' + value[1]
         );
 
-        Object.defineProperty(this, name, { value: branch });
+        Object.defineProperty(this, name, {
+          enumerable: true,
+          configurable: true,
+          value: branch,
+        });
         return branch;
       },
       enumerable: false,
@@ -131,33 +182,16 @@ const branchBase = () => {};
         return branch;
       };
 
-      Object.defineProperty(this, name, { value: colorMapping });
+      Object.defineProperty(this, name, {
+        enumerable: true,
+        configurable: true,
+        value: colorMapping,
+      });
       return colorMapping;
     },
   });
 });
 
-const wrapCodes = (codes: string) => `\x1b[${codes.substring(1)}m`;
-const spawnBranch = (queryCodesSet: string, queryCodesUnset: string) => {
-  const callable = (message: string) =>
-    wrapCodes(queryCodesSet) +
-    indexOfReplaceAll(
-      message,
-      StringEnd,
-      wrapCodes(queryCodesSet) + StringEnd
-    ) +
-    wrapCodes(queryCodesUnset) +
-    StringEnd;
-
-  callable.queryCodesSet = queryCodesSet;
-  callable.queryCodesUnset = queryCodesUnset;
-  callable.toString = callable.set = () => wrapCodes(queryCodesSet);
-  callable.unset = () => wrapCodes(queryCodesUnset) + StringEnd;
-
-  Object.setPrototypeOf(callable, branchBase);
-
-  return callable;
-};
 /**
  * Change terminal output style, if ansi escape codes are supported. Each
  * terminal has slightly different output for predefined color values. Supports
@@ -178,6 +212,54 @@ const spawnBranch = (queryCodesSet: string, queryCodesUnset: string) => {
 export const sec: StyleEscapeCodes = Object.setPrototypeOf(() => {
   throw new TypeError('Style Escape Codes should not be called directly.');
 }, branchBase);
+
 // set to empty to avoid writing this.queryCodesSet || '' in proto every time
 sec.queryCodesSet = '';
 sec.queryCodesUnset = '';
+
+const deleteRootProperties = () => {
+  const omitKeys = ['queryCodesSet', 'queryCodesUnset', 'disable', 'enable'];
+  (Object.keys(sec) as Array<keyof StyleEscapeCodes>)
+    .filter((v) => !omitKeys.includes(v))
+    .forEach((p) => {
+      delete sec[p];
+    });
+};
+
+/**
+ * Disable StyleEscapeCodes. Input text will become output without any escape
+ * codes. Cached root styles are deleted from the chain and all branches will be
+ * marked for garbage collection. Do not keep any references to a style if you
+ * plan to dynamically disable and enable this tool as this will prevent the
+ * garbage collection process.
+ *
+ * ```javascript
+ * const myStyle = sec.b.u.fgRed;
+ * // prints with styles
+ * console.log(sec.b.u.fgRed('Important message'));
+ * // prints with styles
+ * console.log(myStyle('Important message'));
+ * sec.disable();
+ * // prints without styles
+ * console.log(sec.b.u.fgRed('Important message'));
+ * // prints with styles!!!
+ * console.log(myStyle('Important message'));
+ * sec.enable();
+ * ```
+ */
+sec.disable = () => {
+  if (!SecSettings.enabled) return;
+  deleteRootProperties();
+  spawnBranch = branchDisabled;
+  SecSettings.enabled = false;
+};
+
+/**
+ * Enable StyleEscapeCodes.
+ */
+sec.enable = () => {
+  if (SecSettings.enabled) return;
+  deleteRootProperties();
+  spawnBranch = branch;
+  SecSettings.enabled = true;
+};

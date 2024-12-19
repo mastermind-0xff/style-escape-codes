@@ -1,8 +1,8 @@
-[**style-escape-codes-test-package**](../../README.md) • **Docs**
+[**style-escape-codes**](../../README.md) • **Docs**
 
 ***
 
-[style-escape-codes-test-package](../../modules.md) / lib/constants
+[style-escape-codes](../../modules.md) / lib/constants
 
 # lib/constants
 

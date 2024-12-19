@@ -1,8 +1,8 @@
-[**style-escape-codes-test-package**](../../../README.md) • **Docs**
+[**style-escape-codes**](../../../README.md) • **Docs**
 
 ***
 
-[style-escape-codes-test-package](../../../modules.md) / [lib/style-escape-codes](../README.md) / sec
+[style-escape-codes](../../../modules.md) / [lib/style-escape-codes](../README.md) / sec
 
 # Function: sec()
 
@@ -30,4 +30,4 @@ console.log(sec.b.u.fgRed + 'bold underline red message' + sec.b.u.fg.unset());
 
 ## Defined in
 
-[lib/style-escape-codes.ts:178](https://github.com/mastermind-0xff/style-escape-codes/blob/35eeb3b5ab03f193c615000622ad5113dacfdf6d/src/lib/style-escape-codes.ts#L178)
+[lib/style-escape-codes.ts:198](https://github.com/mastermind-0xff/style-escape-codes/blob/f70027a113314c5fe8c8e4fe231b59efc8b75d4d/src/lib/style-escape-codes.ts#L198)

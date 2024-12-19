@@ -144,3 +144,15 @@ export const rgbToEcRgb = (r?: number, g?: number, b?: number): ECNumber => {
   assertRange(r >= 0 && r < 256 && g >= 0 && g < 256 && b >= 0 && b < 256);
   return `${r};${g};${b}`;
 };
+
+/**
+ * Get environment variable value for both NodeJS and Deno.
+ * @param name Environment variable name.
+ * @returns Value or undefined.
+ */
+export const getEnv = (name: string): unknown | undefined => {
+  if (process && process.env) return process.env[name];
+  // @ts-expect-error
+  if (Deno && Deno.env) return Deno.env.get(name);
+  return undefined;
+};

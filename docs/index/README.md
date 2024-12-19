@@ -1,8 +1,8 @@
-[**style-escape-codes-test-package**](../README.md) • **Docs**
+[**style-escape-codes**](../README.md) • **Docs**
 
 ***
 
-[style-escape-codes-test-package](../modules.md) / index
+[style-escape-codes](../modules.md) / index
 
 # index
 

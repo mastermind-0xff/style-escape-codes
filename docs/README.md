@@ -1,4 +1,4 @@
-**style-escape-codes-test-package** • [**Docs**](modules.md)
+**style-escape-codes** • [**Docs**](modules.md)
 
 ***
 
