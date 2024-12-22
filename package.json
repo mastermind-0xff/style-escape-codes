@@ -1,6 +1,6 @@
 {
   "name": "style-escape-codes",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Yet another ansi escape code sequence styler. Supports stacking, nested and global styles; rgb, hex and hsl color spaces out of the box, no dependencies.",
   "keywords": [
     "ansi",
