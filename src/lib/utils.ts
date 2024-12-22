@@ -152,6 +152,8 @@ export const rgbToEcRgb = (r?: number, g?: number, b?: number): ECNumber => {
  */
 export const getEnv = (name: string): unknown | undefined => {
   if (process && process.env) return process.env[name];
+  // @ts-ignore
+  console.log('deno', globalThis.Deno);
   // @ts-expect-error Deno types might not be available.
   if (Deno && Deno.env) return Deno.env.get(name);
   return undefined;

@@ -1,7 +1,18 @@
+declare global {
+  var Deno: {
+    env: {
+      get(key: string): string | undefined;
+      set(key: string, value: string): void;
+      [k: string]: any;
+    };
+  };
+}
+
 import {
   assertNotNullish,
   assertRange,
   assertType,
+  getEnv,
   hexNumberToRgb,
   hexStringToRgb,
   hslToRgb,
@@ -180,6 +191,58 @@ describe('Testing utils', () => {
       expect(() => rgbToEcRgb(255, '0', 0)).toThrow();
       //@ts-expect-error Testing purposes.
       expect(() => rgbToEcRgb(255, 0, '0')).toThrow();
+    });
+  });
+
+  describe('getEnv', () => {
+    test('returns environment variable from process.env', () => {
+      process = process || {};
+      process.env = process.env || {};
+      process.env.ENV_A = '123';
+      expect(getEnv('ENV_A')).toStrictEqual('123');
+      expect(getEnv('ENV_B')).toStrictEqual(undefined);
+    });
+    test('returns environment variable from Deno.env', () => {
+      if (typeof Deno === 'undefined') {
+        global.Deno = {
+          env: {
+            get(key) {
+              return Deno.env[key];
+            },
+            set(key, value) {
+              Deno.env[key] = value;
+            },
+          },
+        };
+      }
+      Deno.env.set('ENV_A', '123');
+
+      let processOrg: any = undefined;
+      if (typeof process !== 'undefined') processOrg = process;
+      // @ts-expect-error Mocking Deno.
+      process = undefined;
+
+      expect(getEnv('ENV_A')).toStrictEqual('123');
+      expect(getEnv('ENV_B')).toStrictEqual(undefined);
+
+      process = processOrg;
+    });
+    test('returns undefined if nor node nor deno detected', () => {
+      let processOrg: any = undefined;
+      if (typeof process !== 'undefined') processOrg = process;
+      let denoOrg: any = undefined;
+      if (typeof Deno !== 'undefined') denoOrg = Deno;
+
+      // @ts-expect-error Conducting tests
+      process = undefined;
+      // @ts-expect-error Conducting tests
+      global.Deno = undefined;
+
+      expect(getEnv('ENV_A')).toStrictEqual(undefined);
+      expect(getEnv('ENV_B')).toStrictEqual(undefined);
+
+      process = processOrg;
+      global.Deno = denoOrg;
     });
   });
 });

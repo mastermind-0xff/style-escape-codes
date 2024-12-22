@@ -50,8 +50,35 @@ export type StyleEscapeCodes = {
   (): never;
   queryCodesSet: '';
   queryCodesUnset: '';
-  disable: () => void;
-  enable: () => void;
+  /**
+   * Disable StyleEscapeCodes. Input text will become output without any escape
+   * codes. Cached root styles are deleted from the chain and all branches will be
+   * marked for garbage collection. Do not keep any references to a style if you
+   * plan to dynamically disable and enable this tool as this will prevent the
+   * garbage collection process.
+   *
+   * ```javascript
+   * const myStyle = sec.b.u.fgRed;
+   * // prints with styles
+   * console.log(sec.b.u.fgRed('Important message'));
+   * // prints with styles
+   * console.log(myStyle('Important message'));
+   * sec.disable();
+   * // prints without styles
+   * console.log(sec.b.u.fgRed('Important message'));
+   * // prints with styles!!!
+   * console.log(myStyle('Important message'));
+   * sec.enable();
+   * ```
+   *
+   * @returns true if status is changed to disabled, false otherwise.
+   */
+  disable: () => boolean;
+  /**
+   * Enable StyleEscapeCodes.
+   * @returns true if status is changed to enabled, false otherwise.
+   */
+  enable: () => boolean;
 } & ColorMappingsAsCallable &
   FlagsAsCallable;
 
@@ -226,40 +253,18 @@ const deleteRootProperties = () => {
     });
 };
 
-/**
- * Disable StyleEscapeCodes. Input text will become output without any escape
- * codes. Cached root styles are deleted from the chain and all branches will be
- * marked for garbage collection. Do not keep any references to a style if you
- * plan to dynamically disable and enable this tool as this will prevent the
- * garbage collection process.
- *
- * ```javascript
- * const myStyle = sec.b.u.fgRed;
- * // prints with styles
- * console.log(sec.b.u.fgRed('Important message'));
- * // prints with styles
- * console.log(myStyle('Important message'));
- * sec.disable();
- * // prints without styles
- * console.log(sec.b.u.fgRed('Important message'));
- * // prints with styles!!!
- * console.log(myStyle('Important message'));
- * sec.enable();
- * ```
- */
 sec.disable = () => {
-  if (!SecSettings.enabled) return;
+  if (!SecSettings.enabled) return false;
   deleteRootProperties();
   spawnBranch = branchDisabled;
   SecSettings.enabled = false;
+  return true;
 };
 
-/**
- * Enable StyleEscapeCodes.
- */
 sec.enable = () => {
-  if (SecSettings.enabled) return;
+  if (SecSettings.enabled) return false;
   deleteRootProperties();
   spawnBranch = branch;
   SecSettings.enabled = true;
+  return true;
 };
