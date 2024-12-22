@@ -82,4 +82,4 @@ List of background color ansi escape codes. [set code, unset code].
 
 ## Defined in
 
-[lib/constants.ts:32](https://github.com/mastermind-0xff/style-escape-codes/blob/86f72e47c8a4169fb2601208e7c23c504221a7fb/src/lib/constants.ts#L32)
+[lib/constants.ts:32](https://github.com/mastermind-0xff/style-escape-codes/blob/d24be47348dc917721cee407992c80d82d402371/src/lib/constants.ts#L32)
